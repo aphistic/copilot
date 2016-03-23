@@ -2,6 +2,7 @@ from tkinter import Toplevel
 from tkinter.ttk import Frame, Button
 
 from copilot.options import OptionsFrame
+from copilot.file_server import FileServerFrame
 
 
 class HomeFrame(Frame):
@@ -25,7 +26,8 @@ class HomeFrame(Frame):
 
     def _new_window(self):
         self.new_window = Toplevel(self.master)
-        self.app = OptionsFrame(self.new_window)
+        #self.app = OptionsFrame(self.new_window)
+        self.app = FileServerFrame(self.new_window)
         print('after options')
 
     def _close(self):

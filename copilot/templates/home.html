@@ -1,0 +1,38 @@
+<!doctype html>
+<head>
+  <title>copilot</title>
+  <script>
+    function removePath(p) {
+        if (confirm('Are you sure you want to delete:\n' + p)) {
+          document.getElementById('rempath').value = p;
+          document.getElementById('remform').submit();
+        }
+    }
+  </script>
+</head>
+<body>
+  <h1>Directories</h1>
+  {% if current_dir|length > 0 %}
+    <a href="?path={{ parent_dir }}">..</a><br>
+  {% endif %}
+  {% for (name, path) in dirs|dictsort %}
+    <a href="?path={{ path }}">{{ name }}</a> [<a href="#" onclick="return removePath('{{ path }}');">X</a>]<br>
+  {% endfor %}
+  <br>
+  <form action="/directory" method="post">
+    <input type="text" name="new_dir" value="">
+    <input type="submit" value="Create Directory">
+  </form>
+  <h1>Files</h1>
+  {% for (name, path) in files|dictsort %}
+    {{ name }} [<a href="#" onclick="return removePath('{{ path }}');">X</a>]<br>
+  {% endfor %}
+  <br>
+  <form action="?path={{ current_dir }}" method="post" enctype="multipart/form-data">
+    <input type="file" name="file">
+    <input type="submit" value="Upload">
+  </form>
+  <form id="remform" action="/asdf/asdf/adsf/asdf/?path={{ current_dir }}" method="delete">
+    <input type="hidden" id="rempath" name="rempath" value="asdf">
+  </form>
+</body>
