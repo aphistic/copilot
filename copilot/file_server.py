@@ -13,8 +13,7 @@ import time
 
 from copilot.options import OptionsFrame
 
-#log = logging.getLogger('werkzeug')
-#log.setLevel(logging.ERROR)
+log = logging.getLogger()
 
 class FileServerFrame(Frame):
     def __init__(self, master):
@@ -24,7 +23,7 @@ class FileServerFrame(Frame):
         self.quit_button = Button(
             self.master,
             text='< Back',
-            command=self._close_window)
+            command=self._cmd_back)
         self.quit_button.grid(row=0, column=0, sticky='w')
 
         http_addr = 'http://{}:{}'.format(socket.gethostbyname(socket.gethostname()), 4000)
@@ -33,7 +32,7 @@ class FileServerFrame(Frame):
         self.server = FileServer(4000)
         self.server.start()
 
-    def _close_window(self):
+    def _cmd_back(self):
         self.server.stop()
         self.server.join(timeout=5)
         self.master.destroy()
@@ -44,7 +43,7 @@ class FileServer(Thread):
         self.root_path = '/home/aphistic/tmp'
         self.port = port
 
-    def run(self):
+    def run(self, debug=False):
         app = Flask(__name__)
         app.config['ROOT_PATH'] = self.root_path
 
@@ -95,7 +94,13 @@ class FileServer(Thread):
         def shutdown():
             request.environ.get('werkzeug.server.shutdown')()
 
-        app.run(host='0.0.0.0', port=self.port, debug=True)
+        if not debug:
+            werk_log = logging.getLogger('werkzeug')
+            werk_log.setLevel(logging.ERROR)
+
+        app.run(host='0.0.0.0', port=self.port, debug=debug)
+        log.info('web server finished')
+
 
     def stop(self):
         client = HTTPConnection('localhost', port=self.port)
