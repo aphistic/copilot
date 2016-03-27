@@ -11,25 +11,22 @@ import shutil
 import socket
 import time
 
+from copilot.frame import CopilotInnerFrame
 from copilot.options import OptionsFrame
 
 log = logging.getLogger()
 
-class FileServerFrame(Frame):
-    def __init__(self, master):
-        super(FileServerFrame, self).__init__(master)
-        self.master = master
+class FileServerFrame(CopilotInnerFrame):
+    def __init__(self, master, config):
+        super(FileServerFrame, self).__init__(master, config)
 
-        self.quit_button = Button(
-            self.master,
-            text='< Back',
-            command=self._cmd_back)
-        self.quit_button.grid(row=0, column=0, sticky='w')
+        self._frame_lbl['text'] = 'Upload Files'
+        self._hide_next()
 
         http_addr = 'http://{}:{}'.format(socket.gethostbyname(socket.gethostname()), 4000)
         Label(self.master, text=http_addr, background='red', anchor='center').grid(row=1, column=0, columnspan=2, sticky='ew')
 
-        self.server = FileServer(4000)
+        self.server = FileServer(4000, config)
         self.server.start()
 
     def _cmd_back(self):
@@ -38,14 +35,14 @@ class FileServerFrame(Frame):
         self.master.destroy()
 
 class FileServer(Thread):
-    def __init__(self, port):
+    def __init__(self, port, config):
         super(FileServer, self).__init__()
-        self.root_path = '/home/aphistic/tmp'
+        self._config = config
         self.port = port
 
     def run(self, debug=False):
         app = Flask(__name__)
-        app.config['ROOT_PATH'] = self.root_path
+        app.config['ROOT_PATH'] = self._config.file_root
 
         @app.route('/', methods=['GET', 'POST'])
         def home():

@@ -1,4 +1,6 @@
 from tkinter import Tk
+from tkinter.ttk import Style
+from copilot.config import Config
 from copilot.home import HomeFrame
 from copilot.select_device import SelectDeviceFrame
 from copilot.file_server import FileServer
@@ -17,19 +19,23 @@ args = parser.parse_args()
 if args.debug:
     log.setLevel(logging.DEBUG)
 
+root = Tk()
+config = Config()
+
+s = Style()
+s.configure('Treeview', rowheight=config.tree_item_height)
+
 if args.server:
-    fs = FileServer(4000)
+    fs = FileServer(4000, config)
     fs.run(debug=True)
 else:
-    root = Tk()
-
     # w, h = root.winfo_screenwidth(), root.winfo_screenheight()
     # print('w: {}, h: {}'.format(w, h))
     # root.overrideredirect(1)
     # root.geometry("%dx%d+0+0" % (w, h))
 
     root.title('copilot')
-    app = HomeFrame(root)
+    app = HomeFrame(root, config)
     #app = SelectDeviceFrame(root)
     root.mainloop()
 
