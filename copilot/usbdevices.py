@@ -5,32 +5,6 @@ def _read_file(path):
     with open(path) as f:
         return f.read()
 
-def _blk_parse(blk_line):
-    blk_info = {}
-    for i, c in enumerate(blk_line):
-        if c == ':':
-            blk_line = blk_line[i+2:]
-            break
-
-    name_start, name_end, val_start, val_end = (0, 0, 0, 0)
-    in_val = False
-    i = 0
-    while i < len(blk_line):
-        c = blk_line[i]
-        if c == '=' and not in_val:
-            name_end = i
-            val_start = i+2
-            i += 2
-            in_val = True
-        if c == '"' and in_val:
-            val_end = i
-            blk_info[blk_line[name_start:name_end].lower()] = blk_line[val_start:val_end]
-            name_start = i+2
-            in_val = False
-        i += 1
-
-    return blk_info
-
 def usb_drives():
     drives = []
 
@@ -70,11 +44,13 @@ class UsbDrive(object):
 
     def _discover_parts(self):
         parts = []
-        output = [x.strip().decode(encoding='UTF-8') for x in check_output(['blkid']).split(b'\n')]
-        for part in output:
-            if part.startswith(self._dev_path):
-                part_path = part.split(':')[0]
-                parts.append(DrivePartition(part_path, _blk_parse(part)))
+        devs = [x.path for x in os.scandir('/dev') if x.path[:len(self._dev_path)] == self._dev_path and x.path != self._dev_path]
+        mounts = {x.split(b' ')[0].decode('utf-8'): x.split(b' ')[2].decode('utf-8') for x in check_output(['mount']).split(b'\n') if len(x.split(b' ')) > 3}
+        for dev in devs:
+            mount = mounts.get(dev)
+            if mount:
+                parts.append(DrivePartition(dev, mount))
+
         return parts
 
     def name(self):
@@ -107,12 +83,15 @@ class UsbDrive(object):
 
 
 class DrivePartition(object):
-    def __init__(self, partition_path, blk_info):
+    def __init__(self, partition_path, mount_path):
         self._part_path = partition_path
-        self._info = blk_info
+        self._mount_path = mount_path
 
     def path(self):
         return self._part_path
 
-    def type(self):
-        return self._info['type']
+    def mount(self):
+        return self._mount_path
+
+    def __str__(self):
+        return self._mount_path

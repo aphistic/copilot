@@ -24,6 +24,7 @@ config = Config()
 
 s = Style()
 s.configure('Treeview', rowheight=config.tree_item_height)
+s.configure('TButton', font='Helvetica 20')
 
 if args.server:
     fs = FileServer(4000, config)
@@ -38,15 +39,3 @@ else:
     app = HomeFrame(root, config)
     #app = SelectDeviceFrame(root)
     root.mainloop()
-
-    from copilot.usbdevices import usb_drives
-    for drive in usb_drives():
-        print('{}'.format(drive))
-        print('size: {}GB'.format(drive.size('g')))
-        print('path: {}'.format(drive.path()))
-        print('vendor: {}'.format(drive.vendor()))
-        print('model: {}'.format(drive.model()))
-        print('partitions:')
-        for p in drive.partitions():
-            print('  {}: {}'.format(p.path(), p.type()))
-        print('')

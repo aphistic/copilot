@@ -1,4 +1,5 @@
 from tkinter.font import Font
+import os.path
 
 class Config(object):
     def __init__(self):
@@ -6,3 +7,6 @@ class Config(object):
         self.item_font = Font(size=20)
 
         self.tree_item_height = 30
+
+        if not os.path.exists(self.file_root):
+            os.makedirs(self.file_root)

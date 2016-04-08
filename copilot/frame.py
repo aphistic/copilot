@@ -7,12 +7,23 @@ class CopilotBaseFrame(Frame):
         self._master = master
         self._config = config
 
-    def _new_window(self, frame_type):
+    def _new_window_cb(self, frame_type):
         def _cb(cb_self, cb_type):
             new_window = Toplevel(cb_self._master)
             cb_type(new_window, self._config)
 
         return lambda: _cb(self, frame_type)
+
+    def _new_state_window(self, frame_type, state):
+        new_window = Toplevel(self._master)
+        frame_type(new_window, self._config, state)
+
+    def _new_state_window_cb(self, frame_type, state):
+        def _cb(cb_self, cb_type, cb_state):
+            new_window = Toplevel(cb_self._master)
+            cb_type(new_window, self._config, cb_state)
+
+        return lambda: _cb(self, frame_type, state)
 
 class CopilotMainFrame(CopilotBaseFrame):
     def __init__(self, master, config):
@@ -31,7 +42,7 @@ class CopilotInnerFrame(CopilotBaseFrame):
         self._next_hidden = False
 
     def _cmd_back(self):
-        self.master.destroy()
+        self._master.destroy()
 
     def _create_header(self):
         self.back_btn = Button(
@@ -44,7 +55,8 @@ class CopilotInnerFrame(CopilotBaseFrame):
         self._frame_lbl = Label(
             self.master,
             text='',
-            anchor='center'
+            anchor='center',
+            font=self._config.item_font
         )
         self._frame_lbl.grid(row=0, column=1, sticky='ew')
 

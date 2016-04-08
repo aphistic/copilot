@@ -6,6 +6,7 @@ from tkinter import Toplevel
 from tkinter.ttk import Frame, Button, Label
 from werkzeug import secure_filename
 import logging
+import netifaces
 import os.path
 import shutil
 import socket
@@ -23,11 +24,29 @@ class FileServerFrame(CopilotInnerFrame):
         self._frame_lbl['text'] = 'Upload Files'
         self._hide_next()
 
-        http_addr = 'http://{}:{}'.format(socket.gethostbyname(socket.gethostname()), 4000)
-        Label(self.master, text=http_addr, background='red', anchor='center').grid(row=1, column=0, columnspan=2, sticky='ew')
+        ips = self._find_ips()
+        http_addr = ''
+        for ip in ips:
+            http_addr += 'http://{}:{}'.format(ip, 4000)
+
+        Label(self.master,
+            text="To upload files, connect to:\n{}".format(http_addr),
+            anchor='center', font=self._config.item_font
+        ).grid(row=1, column=0, columnspan=2, sticky='ew')
 
         self.server = FileServer(4000, config)
         self.server.start()
+
+    def _find_ips(self):
+        ret_ips = []
+        ifaces = netifaces.interfaces()
+        for iface in ifaces:
+            if iface[:2] == 'en':
+                addrs = netifaces.ifaddresses(iface)
+                inet_addrs = addrs.get(netifaces.AF_INET)
+                ret_ips = [a['addr'] for a in inet_addrs]
+
+        return ret_ips
 
     def _cmd_back(self):
         self.server.stop()

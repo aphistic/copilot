@@ -1,16 +1,24 @@
 from tkinter.ttk import Treeview, Style
 import os
+import shutil
+import sys
 
 from copilot.frame import CopilotInnerFrame
-from copilot.select_device import SelectDeviceFrame
+from copilot.message import OkFrame, ConfirmFrame
 from copilot.utils import sizeof_fmt
 
 class CopyFileFrame(CopilotInnerFrame):
-    def __init__(self, master, config):
+    def __init__(self, master, config, state):
         super(CopyFileFrame, self).__init__(master, config)
 
+        self._state = state
+
+        self._item_paths = {}
+
         self._frame_lbl['text'] = 'Copy File'
-        self._next_btn['command'] = self._new_window(SelectDeviceFrame)
+
+        self._next_btn['text'] = 'Copy'
+        self._next_btn['command'] = self._next_cmd
 
         self._tree = Treeview(self._master, columns=('size'))
         self._tree.heading('size', text='Size')
@@ -18,7 +26,35 @@ class CopyFileFrame(CopilotInnerFrame):
 
         self._populate_tree(self._config.file_root)
 
+    def _next_cmd(self):
+        cur_item = self._tree.focus()
+        cur_path = self._item_paths.get(cur_item, '')
+        if cur_path != '':
+            new_path = os.path.join(self._state.device_to_path, os.path.basename(cur_path))
+            try:
+                if os.path.exists(new_path):
+                    if ConfirmFrame.show(
+                        self._master, self._config,
+                        'The file already exists in the destination. '
+                        'Would you like to overwrite it?',
+                        'Yes', 'No'
+                    ):
+                        shutil.copyfile(cur_path, new_path)
+                else:
+                    shutil.copyfile(cur_path, new_path)
+            except PermissionError:
+                OkFrame.show(
+                    self._master, self._config,
+                    'Error copying file:\n\nInvalid permissions'
+                )
+            except Exception as e:
+                OkFrame.show(
+                    self._master, self._config,
+                    'An error occurred while copying the file:\n\n{}'.format(e)
+                )
+
     def _populate_tree(self, tree_root):
+        self._item_paths = {}
         def insert_path(tree, path, parent_id):
             dirs = [e for e in os.scandir(path) if e.is_dir()]
             dirs.sort(key=lambda e: e.name)
@@ -26,8 +62,9 @@ class CopyFileFrame(CopilotInnerFrame):
             for d in dirs:
                 dir_name = d.name
                 dir_id = '{}-{}'.format(parent_id, dir_name)
+                dir_path = os.path.join(path, dir_name)
                 tree.insert(parent_id, 'end', dir_id, text=dir_name, tags=('dir'))
-                insert_path(tree, os.path.join(path, dir_name), dir_id)
+                insert_path(tree, dir_path, dir_id)
 
             files = [e for e in os.scandir(path) if e.is_file()]
             files.sort(key=lambda e: e.name)
@@ -37,6 +74,8 @@ class CopyFileFrame(CopilotInnerFrame):
                 file_id = '{}-{}'.format(parent_id, file_name)
                 file_stat = f.stat()
                 file_size = sizeof_fmt(file_stat.st_size)
+                file_path = os.path.join(path, file_name)
+                self._item_paths[file_id] = file_path
 
                 if idx % 2 == 0:
                     file_bg = 'file_even'
