@@ -1,1 +1,1 @@
-copilot/templates/home.html
+include copilot/templates/*
