@@ -11,7 +11,11 @@ class DeviceToFrame(CopilotInnerFrame):
 
         self._state = state
 
-        self._frame_lbl['text'] = 'Copy To Directory'
+        if self._state.action == 'copy':
+            self._frame_lbl['text'] = 'Copy To Directory'
+        elif self._state.action == 'delete':
+            self._frame_lbl['text'] = 'Delete From Directory'
+
         self._next_btn['command'] = self._next_cmd
 
         self._tree = Treeview(self._master, columns=('size'))

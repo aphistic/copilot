@@ -1,5 +1,6 @@
 from tkinter import Listbox
 
+from copilot.copy_file import CopyFileFrame
 from copilot.copy_state import CopyState
 from copilot.device_to import DeviceToFrame
 from copilot.frame import CopilotInnerFrame
@@ -22,10 +23,15 @@ class DriveOption(object):
         return self._part
 
 class SelectDeviceFrame(CopilotInnerFrame):
-    def __init__(self, master, config):
+    def __init__(self, master, config, state):
         super(SelectDeviceFrame, self).__init__(master, config)
 
-        self._frame_lbl['text'] = 'Copy To Device'
+        self._state = state
+
+        if self._state.action == 'copy':
+            self._frame_lbl['text'] = 'Copy To Device'
+        elif self._state.action == 'delete':
+            self._frame_lbl['text'] = 'Delete From Device'
 
         self._next_btn['command'] = self._next_cmd
 
@@ -37,9 +43,11 @@ class SelectDeviceFrame(CopilotInnerFrame):
     def _next_cmd(self):
         if len(self._dev_list.curselection()) > 0:
             item_idx = int(self._dev_list.curselection()[0])
-            state = CopyState()
-            state.to_device = self._parts[item_idx]
-            self._new_state_window(DeviceToFrame, state)
+            self._state.to_device = self._parts[item_idx]
+            if self._state.action == 'copy':
+                self._new_state_window(DeviceToFrame, self._state)
+            elif self._state.action == 'delete':
+                self._new_state_window(CopyFileFrame, self._state)
 
     def _refresh_drives(self):
         self._parts = []

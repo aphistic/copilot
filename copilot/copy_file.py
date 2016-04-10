@@ -15,18 +15,28 @@ class CopyFileFrame(CopilotInnerFrame):
 
         self._item_paths = {}
 
-        self._frame_lbl['text'] = 'Copy File'
-
-        self._next_btn['text'] = 'Copy'
-        self._next_btn['command'] = self._next_cmd
-
         self._tree = Treeview(self._master, columns=('size'))
         self._tree.heading('size', text='Size')
         self._tree.grid(row=1, column=0, columnspan=3, sticky='nsew')
 
-        self._populate_tree(self._config.file_root)
+        if self._state.action == 'copy':
+            self._next_btn['text'] = 'Copy'
+            self._frame_lbl['text'] = 'Copy File'
+            self._populate_tree(self._config.file_root)
+        elif self._state.action == 'delete':
+            self._next_btn['text'] = 'Delete'
+            self._frame_lbl['text'] = 'Delete File'
+            self._populate_tree(self._state.to_device.part().mount())
+
+        self._next_btn['command'] = self._next_cmd
 
     def _next_cmd(self):
+        if self._state.action == 'copy':
+            self._copy_file()
+        elif self._state.action == 'delete':
+            self._delete_file()
+
+    def _copy_file(self):
         cur_item = self._tree.focus()
         cur_path = self._item_paths.get(cur_item, '')
         if cur_path != '':
@@ -53,8 +63,33 @@ class CopyFileFrame(CopilotInnerFrame):
                     'An error occurred while copying the file:\n\n{}'.format(e)
                 )
 
+    def _delete_file(self):
+        cur_item = self._tree.focus()
+        cur_path = self._item_paths.get(cur_item, '')
+        if cur_path != '':
+            disp_path = cur_path[len(self._state.to_device.part().mount()):]
+            try:
+                if ConfirmFrame.show(
+                    self._master, self._config,
+                    'Are you sure you\'d like to delete this file?\n{}'.format(disp_path),
+                    'Yes', 'No'
+                ):
+                    os.remove(cur_path)
+                    self._tree.delete(self._tree.focus())
+            except PermissionError:
+                OkFrame.show(
+                    self._master, self._config,
+                    'Error deleting file:\n\nInvalid permissions'
+                )
+            except Exception as e:
+                OkFrame.show(
+                    self._master, self._config,
+                    'An error occurred while deleting the file:\n\n{}'.format(e)
+                )
+
     def _populate_tree(self, tree_root):
         self._item_paths = {}
+
         def insert_path(tree, path, parent_id):
             dirs = [e for e in os.scandir(path) if e.is_dir()]
             dirs.sort(key=lambda e: e.name)
@@ -91,7 +126,7 @@ class CopyFileFrame(CopilotInnerFrame):
                     values=(file_size)
                 )
 
-        insert_path(self._tree, self._config.file_root, '')
+        insert_path(self._tree, tree_root, '')
 
         tree = self._tree
         tree.tag_configure('dir', font=self._config.item_font)
