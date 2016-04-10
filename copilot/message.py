@@ -7,9 +7,17 @@ class MessageFrame(CopilotBaseFrame):
     def __init__(self, master, config):
         super(MessageFrame, self).__init__(master, config)
 
+    def _make_full(self, root):
+        w, h = root.winfo_screenwidth(), root.winfo_screenheight()
+        root.overrideredirect(1)
+        root.geometry("%dx%d+0+0" % (w, h))
+
 class ConfirmFrame(MessageFrame):
     def __init__(self, master, config):
         super(ConfirmFrame, self).__init__(master, config)
+
+        if config.full_screen:
+            self._make_full(master)
 
         self.master.grid_rowconfigure(0, weight=1)
         self.master.grid_rowconfigure(1, weight=1)
@@ -61,6 +69,9 @@ class ConfirmFrame(MessageFrame):
 class OkFrame(MessageFrame):
     def __init__(self, master, config):
         super(OkFrame, self).__init__(master, config)
+
+        if config.full_screen:
+            self._make_full(master)
 
         self.master.grid_rowconfigure(0, weight=1)
         self.master.grid_rowconfigure(1, weight=1)
