@@ -2,12 +2,12 @@ from distutils.core import setup
 setup(
     name = 'copilot',
     packages = ['copilot'],
-    version = '0.1.6',
+    version = '0.1.7',
     description = 'Application to manage files on external USB drives',
     author = 'Erik Davidson',
     author_email = 'erik@erikd.org',
     url = 'https://github.com/aphistic/copilot',
-    download_url = 'https://github.com/aphistic/copilot/tarball/0.1.6',
+    download_url = 'https://github.com/aphistic/copilot/tarball/0.1.7',
     keywords = ['raspberrypi', 'raspberry', 'pi', 'filemanager'],
     classifiers = [],
     install_requires = [

@@ -74,7 +74,7 @@ class FileServer(Thread):
             web_path = request.args.get('path') or ''
             if request.method == 'POST':
                 if request.form['action'] == 'create':
-                    f = request.files['file']
+                    f = request.files['upfile']
                     if f:
                         fname = secure_filename(f.filename)
                         fpath = os.path.join(app.config['ROOT_PATH'], web_path, fname)

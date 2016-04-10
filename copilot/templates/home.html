@@ -36,8 +36,9 @@
     {{ name }} [<a href="#" onclick="removeFile('{{ name }}'); return false;">X</a>]<br>
   {% endfor %}
   <br>
-  <form action="?path={{ current_dir }}" method="post" enctype="multipart/form-data">
-    <input type="file" name="file">
+  <form id="addfile" action="/?path={{ current_dir }}" method="POST" enctype="multipart/form-data">
+    <input type="hidden" name="action" value="create">
+    <input type="file" id="upfile" name="upfile">
     <input type="submit" value="Upload">
   </form>
   <form id="remfile" action="/?path={{ current_dir }}" method="post">
