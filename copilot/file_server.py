@@ -29,10 +29,16 @@ class FileServerFrame(CopilotInnerFrame):
         for ip in ips:
             http_addr += 'http://{}:{}'.format(ip, 4000)
 
-        Label(self.master,
+        if len(http_addr) == 0:
+            http_addr = 'Could not find network connection'
+
+        self._lbl = Label(self.master,
             text="To upload files, connect to:\n{}".format(http_addr),
             anchor='center', font=self._config.item_font
-        ).grid(row=1, column=0, columnspan=2, sticky='ew')
+        )
+        self._lbl.grid(row=1, column=0, columnspan=2, sticky='ew')
+        #self._lbl.configure(yscrollcommand=self._sb.set)
+        #self._sb['command'] = self._lbl.yview
 
         self.server = FileServer(4000, config)
         self.server.start()
