@@ -1,3 +1,4 @@
+from tkinter.ttk import Scrollbar
 from tkinter.ttk import Treeview, Style
 import os
 import shutil
@@ -22,6 +23,8 @@ class CopyFileFrame(CopilotInnerFrame):
         self._tree = Treeview(self._master, columns=('size'))
         self._tree.heading('size', text='Size')
         self._tree.grid(row=1, column=0, columnspan=3, sticky='nsew')
+        self._tree.configure(yscrollcommand=self._sb.set)
+        self._sb['command'] = self._tree.yview
 
         if self._state.action == 'copy':
             self._next_btn['text'] = 'Copy'
@@ -103,7 +106,10 @@ class CopyFileFrame(CopilotInnerFrame):
                 dir_id = '{}-{}'.format(parent_id, dir_name)
                 dir_path = os.path.join(path, dir_name)
                 tree.insert(parent_id, 'end', dir_id, text=dir_name, tags=('dir'))
-                insert_path(tree, dir_path, dir_id)
+                try:
+                    insert_path(tree, dir_path, dir_id)
+                except:
+                    pass
 
             files = [e for e in scandir(path) if e.is_file()]
             files.sort(key=lambda e: e.name)

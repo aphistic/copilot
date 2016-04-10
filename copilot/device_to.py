@@ -25,6 +25,8 @@ class DeviceToFrame(CopilotInnerFrame):
         self._tree = Treeview(self._master, columns=('size'))
         self._tree.heading('size', text='Size')
         self._tree.grid(row=1, column=0, columnspan=3, sticky='nsew')
+        self._tree.configure(yscrollcommand=self._sb.set)
+        self._sb['command'] = self._tree.yview
 
         self._item_paths = {}
         self._populate_tree(self._state.to_device.part().mount())
@@ -48,7 +50,10 @@ class DeviceToFrame(CopilotInnerFrame):
                 dir_path = os.path.join(path, dir_name)
                 tree.insert(parent_id, 'end', dir_id, text=dir_name, tags=('dir'))
                 self._item_paths[dir_id] = dir_path
-                insert_path(tree, dir_path, dir_id)
+                try:
+                    insert_path(tree, dir_path, dir_id)
+                except:
+                    pass
 
         insert_path(self._tree, tree_root, '')
 

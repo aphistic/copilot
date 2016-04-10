@@ -5,9 +5,10 @@ class Config(object):
     def __init__(self):
         self.full_screen = False
         self.file_root = None
-        self.item_font = Font(size=20)
+        self.item_font = Font(size=16)
 
         self.tree_item_height = 30
+        self.sb_size = 25
 
     def set_file_root(self, file_root):
         self.file_root = file_root

@@ -30,7 +30,8 @@ def main():
 
     s = Style()
     s.configure('Treeview', rowheight=config.tree_item_height)
-    s.configure('TButton', font='Helvetica 20')
+    s.configure('TButton', font='Helvetica 16')
+    s.configure('Vertical.TScrollbar', arrowsize=config.sb_size)
 
     if args.server:
         fs = FileServer(4000, config)

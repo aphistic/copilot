@@ -1,4 +1,5 @@
-from tkinter import Listbox
+from tkinter import Listbox, VERTICAL
+from tkinter.ttk import Scrollbar
 
 from copilot.copy_file import CopyFileFrame
 from copilot.copy_state import CopyState
@@ -37,6 +38,8 @@ class SelectDeviceFrame(CopilotInnerFrame):
 
         self._dev_list = Listbox(self._master, font=self._config.item_font)
         self._dev_list.grid(row=1, column=0, columnspan=3, sticky='nsew')
+        self._dev_list.configure(yscrollcommand=self._sb.set)
+        self._sb['command'] = self._dev_list.yview
 
         self._refresh_drives()
 

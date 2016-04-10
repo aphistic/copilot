@@ -1,5 +1,5 @@
-from tkinter import Toplevel
-from tkinter.ttk import Frame, Button, Label
+from tkinter import Toplevel, VERTICAL
+from tkinter.ttk import Frame, Button, Label, Scrollbar
 
 class CopilotBaseFrame(Frame):
     def __init__(self, master, config):
@@ -48,6 +48,9 @@ class CopilotInnerFrame(CopilotBaseFrame):
         self.master.grid_columnconfigure(1, weight=1)
 
         self._create_header()
+
+        self._sb = Scrollbar(self._master, orient=VERTICAL)
+        self._sb.grid(row=1, column=3, sticky='nse')
 
         self._next_hidden = False
 
