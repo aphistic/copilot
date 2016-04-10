@@ -22,12 +22,12 @@
     <a href="?path={{ parent_dir }}">..</a><br>
   {% endif %}
   {% for (name, path) in dirs|dictsort %}
-    <a href="?path={{ path }}">{{ name }}</a> [<a href="#" onclick="removePath('{{ path }}'); return false;">X</a>]<br>
+    <a href="?path={{ path }}">{{ name }}</a> [<a href="#" onclick="removePath('{{ name }}'); return false;">X</a>]<br>
   {% endfor %}
   <br>
   <form action="/directory" method="post">
     <input type="hidden" name="action" value="create">
-    <input type="hidden" name="root_path" value="{{ path }}">
+    <input type="hidden" name="root_path" value="{{ current_dir }}">
     <input type="text" name="dir_name" value="">
     <input type="submit" value="Create Directory">
   </form>
