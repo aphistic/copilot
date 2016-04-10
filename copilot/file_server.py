@@ -27,7 +27,7 @@ class FileServerFrame(CopilotInnerFrame):
         ips = self._find_ips()
         http_addr = ''
         for ip in ips:
-            http_addr += 'http://{}:{}'.format(ip, 4000)
+            http_addr += 'http://{}:{}'.format(ip, self._config.web_port)
 
         if len(http_addr) == 0:
             http_addr = 'Could not find network connection'
@@ -40,7 +40,7 @@ class FileServerFrame(CopilotInnerFrame):
         #self._lbl.configure(yscrollcommand=self._sb.set)
         #self._sb['command'] = self._lbl.yview
 
-        self.server = FileServer(4000, config)
+        self.server = FileServer(self._config.web_port, config)
         self.server.start()
 
     def _find_ips(self):

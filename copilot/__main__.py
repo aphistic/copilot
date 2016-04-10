@@ -34,7 +34,7 @@ def main():
     s.configure('Vertical.TScrollbar', arrowsize=config.sb_size)
 
     if args.server:
-        fs = FileServer(4000, config)
+        fs = FileServer(config.web_port, config)
         fs.run(debug=True)
     else:
         root.title('copilot')
