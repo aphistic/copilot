@@ -47,7 +47,7 @@ class FileServerFrame(CopilotInnerFrame):
         ret_ips = []
         ifaces = netifaces.interfaces()
         for iface in ifaces:
-            if iface[:2] == 'en':
+            if iface[:2] == 'en' or iface[:3] == 'eth':
                 addrs = netifaces.ifaddresses(iface)
                 inet_addrs = addrs.get(netifaces.AF_INET)
                 ret_ips = [a['addr'] for a in inet_addrs]
