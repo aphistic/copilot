@@ -10,6 +10,10 @@ setup(
     download_url = 'https://github.com/aphistic/copilot/tarball/0.1.2',
     keywords = ['raspberrypi', 'raspberry', 'pi', 'filemanager'],
     classifiers = [],
+    install_requires = [
+        'Flask >= 0.10.1',
+        'netifaces >= 0.10.4'
+    ],
     entry_points = {
         'gui_scripts': [
             'copilot = copilot.__main__:main'
