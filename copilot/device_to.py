@@ -1,5 +1,9 @@
 from tkinter.ttk import Treeview, Style
 import os
+try:
+    from os import scandir
+except ImportError:
+    from scandir import scandir
 
 from copilot.frame import CopilotInnerFrame
 from copilot.copy_file import CopyFileFrame
@@ -35,7 +39,7 @@ class DeviceToFrame(CopilotInnerFrame):
     def _populate_tree(self, tree_root):
         self._item_paths = {}
         def insert_path(tree, path, parent_id):
-            dirs = [e for e in os.scandir(path) if e.is_dir()]
+            dirs = [e for e in scandir(path) if e.is_dir()]
             dirs.sort(key=lambda e: e.name)
 
             for d in dirs:

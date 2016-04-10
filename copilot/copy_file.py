@@ -2,6 +2,10 @@ from tkinter.ttk import Treeview, Style
 import os
 import shutil
 import sys
+try:
+    from os import scandir
+except ImportError:
+    from scandir import scandir
 
 from copilot.frame import CopilotInnerFrame
 from copilot.message import OkFrame, ConfirmFrame
@@ -91,7 +95,7 @@ class CopyFileFrame(CopilotInnerFrame):
         self._item_paths = {}
 
         def insert_path(tree, path, parent_id):
-            dirs = [e for e in os.scandir(path) if e.is_dir()]
+            dirs = [e for e in scandir(path) if e.is_dir()]
             dirs.sort(key=lambda e: e.name)
 
             for d in dirs:
@@ -101,7 +105,7 @@ class CopyFileFrame(CopilotInnerFrame):
                 tree.insert(parent_id, 'end', dir_id, text=dir_name, tags=('dir'))
                 insert_path(tree, dir_path, dir_id)
 
-            files = [e for e in os.scandir(path) if e.is_file()]
+            files = [e for e in scandir(path) if e.is_file()]
             files.sort(key=lambda e: e.name)
 
             for idx, f in enumerate(files):

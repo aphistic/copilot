@@ -1,5 +1,9 @@
 import os.path
 from subprocess import check_output
+try:
+    from os import scandir
+except ImportError:
+    from scandir import scandir
 
 def _read_file(path):
     with open(path) as f:
@@ -44,7 +48,7 @@ class UsbDrive(object):
 
     def _discover_parts(self):
         parts = []
-        devs = [x.path for x in os.scandir('/dev') if x.path[:len(self._dev_path)] == self._dev_path and x.path != self._dev_path]
+        devs = [x.path for x in scandir('/dev') if x.path[:len(self._dev_path)] == self._dev_path and x.path != self._dev_path]
         mounts = {x.split(b' ')[0].decode('utf-8'): x.split(b' ')[2].decode('utf-8') for x in check_output(['mount']).split(b'\n') if len(x.split(b' ')) > 3}
         for dev in devs:
             mount = mounts.get(dev)

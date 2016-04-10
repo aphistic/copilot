@@ -36,12 +36,6 @@ def main():
         fs = FileServer(4000, config)
         fs.run(debug=True)
     else:
-        if config.full_screen:
-            w, h = root.winfo_screenwidth(), root.winfo_screenheight()
-            #print('w: {}, h: {}'.format(w, h))
-            root.overrideredirect(1)
-            root.geometry("%dx%d+0+0" % (w, h))
-
         root.title('copilot')
         app = HomeFrame(root, config)
         root.mainloop()

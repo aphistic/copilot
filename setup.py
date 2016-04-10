@@ -12,7 +12,8 @@ setup(
     classifiers = [],
     install_requires = [
         'Flask >= 0.10.1',
-        'netifaces >= 0.10.4'
+        'netifaces >= 0.10.4',
+        'scandir >= 1.2'
     ],
     entry_points = {
         'gui_scripts': [
