@@ -52,7 +52,7 @@ class CopyFileFrame(CopilotInnerFrame):
                 if os.path.exists(new_path):
                     if ConfirmFrame.show(
                         self._master, self._config,
-                        'The file already exists in the destination. '
+                        'The file already exists in the destination.\n'
                         'Would you like to overwrite it?',
                         'Yes', 'No'
                     ):
