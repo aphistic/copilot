@@ -3,6 +3,7 @@ import os.path
 
 class Config(object):
     def __init__(self):
+        self.full_screen = False
         self.file_root = None
         self.item_font = Font(size=20)
 

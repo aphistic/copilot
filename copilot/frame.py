@@ -7,6 +7,11 @@ class CopilotBaseFrame(Frame):
         self._master = master
         self._config = config
 
+    def _make_full(self, root):
+        w, h = root.winfo_screenwidth(), root.winfo_screenheight()
+        root.overrideredirect(1)
+        root.geometry("%dx%d+0+0" % (w, h))
+
     def _new_window_cb(self, frame_type):
         def _cb(cb_self, cb_type):
             new_window = Toplevel(cb_self._master)
@@ -28,11 +33,16 @@ class CopilotBaseFrame(Frame):
 class CopilotMainFrame(CopilotBaseFrame):
     def __init__(self, master, config):
         super(CopilotMainFrame, self).__init__(master, config)
+        if config.full_screen:
+            self._make_full(master)
 
 
 class CopilotInnerFrame(CopilotBaseFrame):
     def __init__(self, master, config):
         super(CopilotInnerFrame, self).__init__(master, config)
+
+        if config.full_screen:
+            self._make_full(master)
 
         self.master.grid_rowconfigure(1, weight=1)
         self.master.grid_columnconfigure(1, weight=1)

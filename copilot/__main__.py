@@ -16,6 +16,7 @@ def main():
     parser.add_argument('--server', action='store_true', default=False)
     parser.add_argument('--debug', action='store_true', default=False)
     parser.add_argument('--file_root', default=os.path.expanduser('~'))
+    parser.add_argument('--full', action='store_true', default=False)
 
     args = parser.parse_args()
 
@@ -24,6 +25,7 @@ def main():
 
     root = Tk()
     config = Config()
+    config.full_screen = args.full
     config.set_file_root(os.path.expanduser(args.file_root))
 
     s = Style()
@@ -34,14 +36,14 @@ def main():
         fs = FileServer(4000, config)
         fs.run(debug=True)
     else:
-        # w, h = root.winfo_screenwidth(), root.winfo_screenheight()
-        # print('w: {}, h: {}'.format(w, h))
-        # root.overrideredirect(1)
-        # root.geometry("%dx%d+0+0" % (w, h))
+        if config.full_screen:
+            w, h = root.winfo_screenwidth(), root.winfo_screenheight()
+            #print('w: {}, h: {}'.format(w, h))
+            root.overrideredirect(1)
+            root.geometry("%dx%d+0+0" % (w, h))
 
         root.title('copilot')
         app = HomeFrame(root, config)
-        #app = SelectDeviceFrame(root)
         root.mainloop()
 
 if __name__ == '__main__':
